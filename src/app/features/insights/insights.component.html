@@ -1,0 +1,41 @@
+<div class="insights">
+  <header class="insights_header">
+    <h3>Insights Dashboard</h3>
+  </header>
+
+  <div class="chart">
+    <app-chart
+      class="chart_chart"
+      [type]="'line'"
+      [data]="areaChartData()"
+      [options]="areaChartOptions()"
+      [width]="'90%'"
+      [height]="'400px'"
+      [resetZoomEffect]="true"
+      (resetZoom)="resetZoom($event)">
+
+      <div class="chart_header">
+        <div class="title">
+          <p class="chart_header__title">Total Sales</p>
+          <p class="chart_header__sales">{{ computeDateRangeText() }} </p>
+        </div>
+        <div class="dateranges">
+          <p-select class="chart_header__daterange" [options]="dateRanges" optionLabel="name"
+            (onChange)="onDateRangeChange($event)">
+          </p-select>
+        </div>
+        @if(salesDateRecord() === 'Custom') {
+        <div class="calendar">
+          <p-datepicker class="chart_header__customdate" [(ngModel)]="customStartDate" [showIcon]="true"
+            [readonlyInput]="true" placeholder="Start Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
+
+          <p-datepicker class="chart_header__customdate" [(ngModel)]="customEndDate" [showIcon]="true"
+            [readonlyInput]="true" placeholder="End Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
+        </div>
+        }
+      </div>
+
+    </app-chart>
+
+  </div>
+</div>

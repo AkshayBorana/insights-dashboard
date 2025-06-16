@@ -1,0 +1,91 @@
+.insights {
+  &_header {
+    height: 60px;
+    width: 100%;
+    border: 1px solid #000;
+  }
+}
+
+.chart {
+  margin: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+
+  &_chart {
+    border: 1px solid #efefef;
+    border-radius: 8px;
+    display: block;
+    margin: 10px 0px;
+  }
+
+  &_header {
+    display: flex;
+    border-bottom: 1px solid #efefef;
+    flex-flow: row wrap;
+    min-height: 60px;
+    align-items: center;
+    padding: 5px 5px;
+
+
+    &__title {
+      font-size: 14px;
+      font-weight: 900;
+      margin: 0px;
+      color: #000;
+      padding: 0px 0px 4px 0px;
+    }
+
+    &__sales {
+      font-size: 12px;
+      margin: 0px;
+      color: #6e6e6e;
+    }
+
+    &__daterange {
+      height: 40px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    &__customdate {
+      height: 40px;
+      width: 130px;
+
+      ::ng-deep {
+        .p-datepicker {
+          height: inherit;
+        }
+
+        .p-inputtext {
+          font-size: 14px;
+        }
+
+        .p-datepicker-dropdown {
+          width: 30px;
+        }
+      }
+    }
+  }
+
+}
+
+.title,
+.dateranges,
+.calendar {
+  padding: 5px 0px;
+  width: 300px;
+  margin: 0px 5px;
+}
+
+.calendar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dateranges {
+  p-select {
+    width: 300px;
+  }
+}
