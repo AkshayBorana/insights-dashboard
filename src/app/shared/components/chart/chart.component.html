@@ -1,0 +1,12 @@
+<div class="chart">
+
+  <ng-content></ng-content>
+
+  <p-chart #chart [type]="type()" [data]="data()" [options]="options()" [height]="height()" [width]="width()">
+  </p-chart>
+
+  @if(enableZoomPan()) {
+  <button pButton pRipple severity="success" label="Reset zoom" class="reset_btn" (click)="reset(chart)">
+  </button>
+  }
+</div>

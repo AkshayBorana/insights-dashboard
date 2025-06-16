@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: 'insights',
     loadComponent: () =>
-      import('../features/insights/insights.component').then(
+      import('./features/insights/insights.component').then(
         (m) => m.InsightsComponent
       ),
   },
