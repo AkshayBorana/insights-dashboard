@@ -29,7 +29,6 @@ export class ChartConfigService {
           boxWidth: 10,
           boxHeight: 10,
           padding: 20,
-
         },
       },
     },

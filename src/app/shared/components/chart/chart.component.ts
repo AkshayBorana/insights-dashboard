@@ -1,11 +1,12 @@
 import { Component, input, output, ViewChild } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrl: './chart.component.scss',
-  imports: [ChartModule],
+  imports: [ChartModule, ButtonModule],
 })
 export class ChartComponent {
   @ViewChild('chart') chart: ChartModule;
