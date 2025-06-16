@@ -4,8 +4,15 @@
   </header>
 
   <div class="chart">
-    <app-chart class="chart_chart" [type]="'line'" [data]="areaChartData()" [options]="areaChartOptions()"
-      [width]="'90%'" [height]="'400px'" [resetZoomEffect]="true" (resetZoom)="resetZoom($event)">
+    <app-chart
+      class="chart_chart"
+      [type]="'line'"
+      [data]="areaChartData()"
+      [options]="areaChartOptions()"
+      [width]="'90%'"
+      [height]="'400px'"
+      [resetZoomEffect]="true"
+      (resetZoom)="resetZoom($event)">
 
       <div class="chart_header">
         <div class="title">
