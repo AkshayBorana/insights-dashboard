@@ -25,7 +25,7 @@ export class ChartComponent {
   resetZoom = output<ChartModule | null>();
   width = input<string>();
   height = input<string>();
-  enableZoomPan = input<boolean>(); // Should be resetZoomEffect
+  resetZoomEffect = input<boolean>();
 
   constructor() {}
 

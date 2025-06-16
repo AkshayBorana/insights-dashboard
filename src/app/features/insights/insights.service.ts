@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class DataService {
+export class InsightsService {
   constructor() {}
 
   getAreaData(range: string): Observable<any> {

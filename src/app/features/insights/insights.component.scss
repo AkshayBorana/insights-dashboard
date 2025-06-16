@@ -5,3 +5,17 @@
     border: 1px solid #000;
   }
 }
+
+.chart {
+  margin: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+
+  &_chart {
+    border: 1px solid #efefef;
+    border-radius: 8px;
+    display: block;
+    margin: 10px 0px;
+  }
+}
