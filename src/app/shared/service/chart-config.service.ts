@@ -48,4 +48,50 @@ export class ChartConfigService {
       },
     },
   };
+
+  public barChartConfig = {
+    responsive: true,
+    plugins: { legend: { position: 'top', display: false } },
+    scales: {
+      x: {
+        border: { display: false },
+        display: true,
+        grid: { display: false },
+        ticks: { padding: 10 },
+      },
+      y: {
+        beginAtZero: true,
+        border: { display: false }, // Hide Y-axis border
+        ticks: {
+          callback: (value: number | string) => `$${value}`,
+          padding: 20,
+        },
+      },
+    },
+  };
+
+  public stackedChartConfig = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+    },
+    scales: {
+      x: {
+        border: { display: false },
+        display: true,
+        grid: { display: false },
+        ticks: { padding: 10 },
+        stacked: true,
+      },
+      y: {
+        beginAtZero: true,
+        border: { display: false },
+        stacked: true, // Enable stacking for the bars
+        ticks: {
+          callback: (value: number) => `$${value.toFixed(2)}`, // Format with $ and 2 decimal places
+          padding: 10,
+        },
+      },
+    },
+  };
 }
