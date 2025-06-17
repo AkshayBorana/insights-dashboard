@@ -2,6 +2,19 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
 
+## Features
+
+- **Area Chart**: Displays data trends for different date ranges and with dataset switching (Dataset-1, Dataset-2, Dataset-3), zoom/pan interactivity.
+- **Bar Chart**: Shows sales channel breakdown with custom styling and rounded bars.
+- **Stacked Bar Chart**: Illustrates average ticket size trends over time with stacked data.
+- **Mock API Integration**: Fetches mock JSON data from assets to simulate API calls.
+
+## Prerequisites
+
+- Node.js (v18.x or later)
+- npm (v9.x or later)
+- Angular CLI (v19.x)
+
 ## Development server
 
 To start a local development server, run:
