@@ -73,7 +73,7 @@ export class ChartConfigService {
   public stackedChartConfig = {
     responsive: true,
     plugins: {
-      legend: { display: false },
+      legend: { display: true, },
     },
     scales: {
       x: {

@@ -1,12 +1,21 @@
 <div class="insights">
   <header class="insights_header">
     <h3>Insights Dashboard</h3>
-    <!-- <div>
-      <button pButton pRipple label="Date Set 1" class="reset_btn" (click)="updateDataSets('dataSet1')"></button>
-      <button pButton pRipple label="Date Set 2" class="reset_btn" (click)="updateDataSets('dataSet2')"></button>
-      <button pButton pRipple label="Date Set 3" class="reset_btn" (click)="updateDataSets('dataSet3')"></button>
-    </div> -->
+
   </header>
+
+  <div class="datasets">
+    @for(btn of dataSetButton; track btn.id) {
+    <button
+      class="datasets_btn"
+      [class.active]="dataSetNumber() === btn.value"
+      pButton
+      pRipple
+      [label]="btn.label"
+      (click)="updateDataSets(btn.value)">
+    </button>
+    }
+  </div>
 
   <div class="chart">
     <!-- Area Chart -->
@@ -35,27 +44,27 @@
     </app-chart>
 
     <!-- <div class="container"> -->
-      <!-- Bar chart -->
-      <app-chart class="chart_chart" [type]="'bar'" [data]="barChartData()" [options]="barChartOptions()"
-        [width]="'100%'" [height]="'400px'" [resetZoomEffect]="false">
-        <div class="chart_header">
-          <div class="title">
-            <p class="chart_header__title">Sales Channel Breakdown</p>
-            <p class="chart_header__sales">Looking at a period of Jun 8 - Jun 14</p>
-          </div>
+    <!-- Bar chart -->
+    <app-chart class="chart_chart" [type]="'bar'" [data]="barChartData()" [options]="barChartOptions()" [width]="'100%'"
+      [height]="'400px'" [resetZoomEffect]="false">
+      <div class="chart_header">
+        <div class="title">
+          <p class="chart_header__title">Sales Channel Breakdown</p>
+          <p class="chart_header__sales">Looking at a period of Jun 8 - Jun 14</p>
         </div>
-      </app-chart>
+      </div>
+    </app-chart>
 
-      <!-- Stacked chart -->
-      <app-chart class="chart_chart" [type]="'bar'" [data]="stackedChartData()" [options]="stackedChartOptions()"
-        [width]="'100%'" [height]="'400px'" [resetZoomEffect]="false">
-        <div class="chart_header">
-          <div class="title">
-            <p class="chart_header__title">Avg Ticket Size</p>
-            <p class="chart_header__sales">Looking at each week of Jun</p>
-          </div>
+    <!-- Stacked chart -->
+    <app-chart class="chart_chart" [type]="'bar'" [data]="stackedChartData()" [options]="stackedChartOptions()"
+      [width]="'100%'" [height]="'400px'" [resetZoomEffect]="false">
+      <div class="chart_header">
+        <div class="title">
+          <p class="chart_header__title">Avg Ticket Size</p>
+          <p class="chart_header__sales">Looking at each week of Jun</p>
         </div>
-      </app-chart>
+      </div>
+    </app-chart>
     <!-- </div> -->
 
 

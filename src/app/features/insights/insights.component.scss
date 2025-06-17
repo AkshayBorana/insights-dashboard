@@ -101,6 +101,26 @@
   }
 }
 
+.datasets {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+
+  &_btn {
+    background: transparent;
+    color: colors.$black;
+    border: 1px solid colors.$gallery_solid;
+    margin: 0px 10px;
+    font-size: 12px;
+  }
+
+  .active {
+    background: colors.$green;
+    color: colors.$white;
+  }
+}
+
 // .container {
 //     display: flex;
 //     flex-wrap: wrap;
