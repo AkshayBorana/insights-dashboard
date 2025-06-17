@@ -28,8 +28,6 @@ export class ChartComponent {
   height = input<string>();
   resetZoomEffect = input<boolean>();
 
-  constructor() {}
-
   public reset(chart): void {
     this.resetZoom.emit(chart);
   }

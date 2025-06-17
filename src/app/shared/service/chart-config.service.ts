@@ -29,6 +29,16 @@ export class ChartConfigService {
           boxWidth: 10,
           boxHeight: 10,
           padding: 20,
+          generateLabels: (chart: any) => {
+            const datasets = chart.data.datasets;
+            return datasets.map((dataset: any) => ({
+              text: `$${dataset.total.toLocaleString()} ${dataset.label}`,
+              fillStyle: dataset.backgroundColor,
+              strokeStyle: dataset.borderColor,
+              lineWidth: 1,
+              borderRadius: 2,
+            }));
+          },
         },
       },
     },
