@@ -16,30 +16,31 @@ import { DateRange } from '../../shared/model/date-range.model';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
-import { forkJoin, Subject, takeUntil } from 'rxjs';
+import { forkJoin, map, Subject, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-insights',
   templateUrl: './insights.component.html',
   styleUrl: './insights.component.scss',
-  imports: [ChartComponent, FormsModule, SelectModule, DatePickerModule, ButtonModule],
+  imports: [
+    ChartComponent,
+    FormsModule,
+    SelectModule,
+    DatePickerModule,
+    ButtonModule,
+  ],
 })
 export class InsightsComponent implements OnInit, OnDestroy {
   ngUnSubscribe$ = new Subject<void>();
-
   insightsService = inject(InsightsService);
   chartConfigService = inject(ChartConfigService);
-
   areaChartData = signal<any>(null);
   areaChartOptions = signal<any>(null);
-
   barChartData = signal<any>(null);
   barChartOptions = signal<any>(null);
-
   stackedChartData = signal<any>(null);
   stackedChartOptions = signal<any>(null);
-
   customStartDate = model<Date | null>(null);
   customEndDate = model<Date | null>(null);
   public dateRanges: DateRange[] = [
@@ -48,13 +49,11 @@ export class InsightsComponent implements OnInit, OnDestroy {
     { name: 'Last Year', value: 'lastYear' },
     { name: 'Custom', value: 'custom' },
   ];
-
-  dataSetButton = [
+  public dataSetButton = [
     { id: 0, value: 'dataSet1', label: 'Data set 1' },
     { id: 1, value: 'dataSet2', label: 'Data set 2' },
-    { id: 2, value: 'dataSet3', label: 'Data set 3' }
-  ]
-
+    { id: 2, value: 'dataSet3', label: 'Data set 3' },
+  ];
   salesDateRecord = signal<string>('Last Month');
   computeDateRangeText = computed(() => {
     let range = '';
@@ -78,7 +77,6 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
     return range;
   });
-
   dataSetNumber = signal<string>('dataSet1');
   selectedRange = signal<string>('lastMonth');
 
@@ -89,44 +87,45 @@ export class InsightsComponent implements OnInit, OnDestroy {
     this.loadData(this.selectedRange());
   }
 
+  /**
+   * Fetch data from api service for Area, Bar and Stacked chart.
+   * @param range: Range for which the data should be fetched.
+   * @returns void - This method does not return a value
+   */
   private loadData(range: string): void {
+    const areaChart$ = this.insightsService
+      .getAreaChartData(this.dataSetNumber(), range)
+      .pipe(
+        map((res) => {
+          const updatedData = { ...res };
+          updatedData.datasets = res.datasets.map((dataset) => ({
+            ...dataset,
+            total: dataset.data.reduce(
+              (acc: number, val: number) => acc + val,
+              0
+            ),
+          }));
+          return updatedData;
+        })
+      );
+    const barChart$ = this.insightsService.getBarData(this.dataSetNumber());
+    const stackedChart$ = this.insightsService.getStackedData(
+      this.dataSetNumber()
+    );
 
-    // const areaChart$ = this.insightsService.getAreaData(range);
-    // const barChart$ = this.insightsService.getBarData(range);
-    // const stackedChart$ = this.insightsService.getStackedData(range);
-
-    // forkJoin([areaChart$, barChart$, stackedChart$])
-    //   .pipe(takeUntil(this.ngUnSubscribe$))
-    //   .subscribe(([areaData, barData, stackedData]) => {
-    //    this.areaChartData.set(areaData);
-    //    this.barChartData.set(barData);
-    //    this.stackedChartData.set(stackedData)
-    //   });
-
-    this.insightsService.getAreaChartData(this.dataSetNumber(), range)
+    forkJoin([areaChart$, barChart$, stackedChart$])
       .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe(res => {
-       this.areaChartData.set(res);
-      })
-
-    // this.insightsService
-    //   .getAreaData(range)
-    //   .pipe(takeUntil(this.ngUnSubscribe$))
-    //   .subscribe((data) => {
-    //     this.areaChartData.set(data);
-    //   });
-
-    this.insightsService
-      .getBarData(this.dataSetNumber(),range)
-      .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe((data) => this.barChartData.set(data));
-
-    this.insightsService
-      .getStackedData(this.dataSetNumber(), range)
-      .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe((data) => this.stackedChartData.set(data));
+      .subscribe(([areaData, barData, stackedData]) => {
+        this.areaChartData.set(areaData);
+        this.barChartData.set(barData);
+        this.stackedChartData.set(stackedData);
+      });
   }
 
+  /**
+   * Initializes charts config options. Eg: legends, labels, color etc.
+   * @returns void - This method does not return a value
+   */
   private initChart(): void {
     this.areaChartOptions.set(this.chartConfigService.areaChartCongif);
     this.barChartOptions.set(this.chartConfigService.barChartConfig);
@@ -134,8 +133,9 @@ export class InsightsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * @description To reset charts zoom/pan effect.
-   * @param chart : ChartModule
+   * Resets the zoom and pan state of a Chart
+   * @param chart The PrimeNG ChartModule instance containing the Chart.js chart.
+   * @returns void - This method does not return a value; it modifies the chart's zoom/pan state as a side effect.
    */
   public resetZoom(chart: ChartModule): void {
     if (chart && (chart['chart'] as Chart)) {
@@ -143,6 +143,11 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Dropdown to get data for different date range eg: 'Last month', 'Last quarter', 'Last year' and 'custom date'.
+   * @param event The date range for which user wants has requested data.
+   * @returns void - This method does not return a value
+   */
   public onDateRangeChange(event: any): void {
     const { name, value } = event?.value;
     this.salesDateRecord.set(name);
@@ -152,6 +157,10 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Custom date picker, allows to fetch data for start and end date.
+   * @returns void - This method does not return a value
+   */
   public onCustomDateSelect(): void {
     let startDate = '';
     let endDate = '';
@@ -168,12 +177,18 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * To load different data sets
+   * @param dataSet Data set for which the user has requested data. Eg: 'dataSet1', 'dataSet2', 'dataSet3'
+   * @returns void - This method does not return a value
+   */
   public updateDataSets(dataSet: string): void {
     this.dataSetNumber.set(dataSet);
-    this.loadData( this.selectedRange())
+    this.loadData(this.selectedRange());
   }
 
   ngOnDestroy(): void {
+    // Unsubscribing to avoid memory leaks after the component is destroyed
     this.ngUnSubscribe$.next();
     this.ngUnSubscribe$.complete();
   }
