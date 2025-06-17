@@ -17,12 +17,13 @@ import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-insights',
   templateUrl: './insights.component.html',
   styleUrl: './insights.component.scss',
-  imports: [ChartComponent, FormsModule, SelectModule, DatePickerModule],
+  imports: [ChartComponent, FormsModule, SelectModule, DatePickerModule, ButtonModule],
 })
 export class InsightsComponent implements OnInit, OnDestroy {
   ngUnSubscribe$ = new Subject<void>();
@@ -73,32 +74,33 @@ export class InsightsComponent implements OnInit, OnDestroy {
   });
 
   dataSetNumber = signal<string>('dataSet1');
+  selectedRange = signal<string>('lastMonth');
 
   constructor() {}
 
   ngOnInit(): void {
     this.initChart();
-    this.loadData('lastMonth');
+    this.loadData(this.selectedRange());
   }
 
   private loadData(range: string): void {
 
-    const areaChart$ = this.insightsService.getAreaData(range);
-    const barChart$ = this.insightsService.getBarData(range);
-    const stackedChart$ = this.insightsService.getStackedData(range);
+    // const areaChart$ = this.insightsService.getAreaData(range);
+    // const barChart$ = this.insightsService.getBarData(range);
+    // const stackedChart$ = this.insightsService.getStackedData(range);
 
-    forkJoin([areaChart$, barChart$, stackedChart$])
-      .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe(([areaData, barData, stackedData]) => {
-       this.areaChartData.set(areaData);
-       this.barChartData.set(barData);
-       this.stackedChartData.set(stackedData)
-      });
+    // forkJoin([areaChart$, barChart$, stackedChart$])
+    //   .pipe(takeUntil(this.ngUnSubscribe$))
+    //   .subscribe(([areaData, barData, stackedData]) => {
+    //    this.areaChartData.set(areaData);
+    //    this.barChartData.set(barData);
+    //    this.stackedChartData.set(stackedData)
+    //   });
 
-    this.insightsService.getChartData(this.dataSetNumber(), range)
+    this.insightsService.getAreaChartData(this.dataSetNumber(), range)
       .pipe(takeUntil(this.ngUnSubscribe$))
       .subscribe(res => {
-        console.log(res);
+       this.areaChartData.set(res);
       })
 
     // this.insightsService
@@ -108,15 +110,15 @@ export class InsightsComponent implements OnInit, OnDestroy {
     //     this.areaChartData.set(data);
     //   });
 
-    // this.insightsService
-    //   .getBarData(range)
-    //   .pipe(takeUntil(this.ngUnSubscribe$))
-    //   .subscribe((data) => this.barChartData.set(data));
+    this.insightsService
+      .getBarData(this.dataSetNumber(),range)
+      .pipe(takeUntil(this.ngUnSubscribe$))
+      .subscribe((data) => this.barChartData.set(data));
 
-    // this.insightsService
-    //   .getStackedData(range)
-    //   .pipe(takeUntil(this.ngUnSubscribe$))
-    //   .subscribe((data) => this.stackedChartData.set(data));
+    this.insightsService
+      .getStackedData(this.dataSetNumber(), range)
+      .pipe(takeUntil(this.ngUnSubscribe$))
+      .subscribe((data) => this.stackedChartData.set(data));
   }
 
   private initChart(): void {
@@ -138,7 +140,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
   public onDateRangeChange(event: any): void {
     const { name, value } = event?.value;
     this.salesDateRecord.set(name);
-    console.log(this.salesDateRecord());
+    this.selectedRange.set(value);
     if (value !== 'custom') {
       this.loadData(value);
     }
@@ -155,11 +157,14 @@ export class InsightsComponent implements OnInit, OnDestroy {
       endDate = this.customEndDate()!.toISOString().slice(0, 10);
     }
 
-    console.log(startDate, endDate);
-
     if (startDate && endDate) {
-      this.loadData('custom');
+      this.loadData(this.selectedRange());
     }
+  }
+
+  public updateDataSets(dataSet: string): void {
+    this.dataSetNumber.set(dataSet);
+    // this.loadData(this.dataSetNumber(), this.selectedRange())
   }
 
   ngOnDestroy(): void {

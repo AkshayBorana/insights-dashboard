@@ -1,0 +1,119 @@
+{
+  "dataSet1": {
+    "labels": [
+      "Jun 1",
+      "Jun 8",
+      "Jun 15",
+      "Jun 22",
+      "Jun 29"
+    ],
+    "datasets": [
+      {
+        "type": "bar",
+        "label": "All Customers",
+        "data": [
+          22.98,
+          23.15,
+          19.19,
+          0,
+          0
+        ],
+        "backgroundColor": "#FFC107",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      },
+      {
+        "type": "bar",
+        "label": "Loyalty Customers",
+        "data": [
+          27.01,
+          29.2,
+          22.9,
+          0,
+          0
+        ],
+        "backgroundColor": "#03A9F4",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  },
+  "dataSet2": {
+    "labels": [
+      "Jun 1",
+      "Jun 8",
+      "Jun 15",
+      "Jun 22",
+      "Jun 29"
+    ],
+    "datasets": [
+      {
+        "type": "bar",
+        "label": "All Customers",
+        "data": [
+          18,
+          24,
+          27,
+          0,
+          0
+        ],
+        "backgroundColor": "#FFC107",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      },
+      {
+        "type": "bar",
+        "label": "Loyalty Customers",
+        "data": [
+          20,
+          30,
+          34,
+          0,
+          0
+        ],
+        "backgroundColor": "#03A9F4",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  },
+  "dataSet3": {
+    "labels": [
+      "Jun 1",
+      "Jun 8",
+      "Jun 15",
+      "Jun 22",
+      "Jun 29"
+    ],
+    "datasets": [
+      {
+        "type": "bar",
+        "label": "All Customers",
+        "data": [
+          50,
+          60,
+          70,
+          0,
+          0
+        ],
+        "backgroundColor": "#FFC107",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      },
+      {
+        "type": "bar",
+        "label": "Loyalty Customers",
+        "data": [
+          60,
+          75,
+          89,
+          0,
+          0
+        ],
+        "backgroundColor": "#03A9F4",
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  }
+}

@@ -7,6 +7,9 @@
     border: 1px solid colors.$black;
     padding: 0px 20px;
     font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -15,6 +18,10 @@
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px 8px;
+
+  // display: flex;
+  // flex-direction: column;
+  // width: 100%;
 
   &_chart {
     border: 1px solid colors.$gallery_solid;
@@ -93,3 +100,29 @@
     width: 300px;
   }
 }
+
+// .container {
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: space-between;
+//     gap: 1rem;
+// }
+
+// .full_width {
+//       width: 100%;
+//     }
+
+// .half_width {
+//       flex: 1;
+//     min-width: 0;
+// }
+
+// @media (max-width: 768px) {
+//       .container {
+//         flex-direction: column;
+//       }
+
+//       .half_width {
+//         flex: 100%; /* Full width on small screens */
+//       }
+//     }
