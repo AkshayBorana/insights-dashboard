@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { catchError, map, Observable, of } from 'rxjs';
+import { environment } from '../../../environment/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -7,6 +9,17 @@ import { Observable, of } from 'rxjs';
 export class InsightsService {
   constructor() {}
 
+  private http = inject(HttpClient);
+  env = environment;
+
+  // public getAreaData(dataset: string, range: string) {
+  //   return this.http.get(this.env.API_URL).pipe(
+  //     map((data) => data[dataset][range] || data[dataset]['lastMonth']),
+  //     catchError((error: HttpErrorResponse) =>
+  //       of('Error loading data! Please try again.')
+  //     )
+  //   );
+  // }
   getAreaData(range: string): Observable<any> {
     const mockData = this.getMockAreaData(range);
     return of(mockData);
@@ -79,10 +92,12 @@ export class InsightsService {
           '2025-06-11',
           '2025-06-12',
           '2025-06-13',
-          '2025-06-14'
+          '2025-06-14',
         ];
         baseData.datasets[0].data = [1000, 2500, 500, 4000, 2900, 4000, 5000];
-        baseData.datasets[1].data = [1800, 25000, 3400, 5000, 7000, 8500, 10000];
+        baseData.datasets[1].data = [
+          1800, 25000, 3400, 5000, 7000, 8500, 10000,
+        ];
         break;
 
       default:
@@ -93,10 +108,12 @@ export class InsightsService {
           '2025-06-11',
           '2025-06-12',
           '2025-06-13',
-          '2025-06-14'
+          '2025-06-14',
         ];
         baseData.datasets[0].data = [1000, 2500, 500, 4000, 2900, 4000, 5000];
-        baseData.datasets[1].data = [1800, 25000, 3400, 5000, 7000, 8500, 10000];
+        baseData.datasets[1].data = [
+          1800, 25000, 3400, 5000, 7000, 8500, 10000,
+        ];
         break;
     }
     return baseData;

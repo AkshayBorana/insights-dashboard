@@ -63,6 +63,8 @@ export class InsightsComponent implements OnInit, OnDestroy {
     return range;
   });
 
+  dataSetNumber = signal<string>('dataSet1');
+
   constructor() {}
 
   ngOnInit(): void {
