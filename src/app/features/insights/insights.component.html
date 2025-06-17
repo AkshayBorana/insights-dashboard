@@ -5,9 +5,15 @@
 
   <div class="chart">
     <!-- Area Chart -->
-    <app-chart class="chart_chart" [type]="'line'" [data]="areaChartData()" [options]="areaChartOptions()"
-      [width]="'90%'" [height]="'400px'" [resetZoomEffect]="true" (resetZoom)="resetZoom($event)">
-
+    <app-chart
+      class="chart_chart"
+      [type]="'line'"
+      [data]="areaChartData()"
+      [options]="areaChartOptions()"
+      [width]="'90%'"
+      [height]="'400px'"
+      [resetZoomEffect]="true"
+      (resetZoom)="resetZoom($event)">
       <div class="chart_header">
         <div class="title">
           <p class="chart_header__title">Total Sales</p>
@@ -28,13 +34,17 @@
         </div>
         }
       </div>
-
     </app-chart>
 
-
     <!-- Bar chart -->
-    <app-chart class="chart_chart" [type]="'bar'" [data]="barChartData()" [options]="barChartOptions()" [width]="'100%'"
-      [height]="'400px'" [resetZoomEffect]="false">
+    <app-chart
+      class="chart_chart"
+      [type]="'bar'"
+      [data]="barChartData()"
+      [options]="barChartOptions()"
+      [width]="'100%'"
+      [height]="'400px'"
+      [resetZoomEffect]="false">
       <div class="chart_header">
         <div class="title">
           <p class="chart_header__title">Sales Channel Breakdown</p>
@@ -43,17 +53,21 @@
       </div>
     </app-chart>
 
-
-          <app-chart class="chart_chart" [type]="'bar'" [data]="stackedChartData()" [options]="stackedChartOptions()"
-            [width]="'100%'" [height]="'400px'" [resetZoomEffect]="false">
-            <div class="chart_header">
-              <div class="title">
-                <p class="chart_header__title">Avg Ticket Size</p>
-                <!-- Update to add a date -->
-                <p class="chart_header__sales">Looking at each week of Jun</p>
-              </div>
-            </div>
-          </app-chart>
+    <app-chart
+      class="chart_chart"
+      [type]="'bar'"
+      [data]="stackedChartData()"
+      [options]="stackedChartOptions()"
+      [width]="'100%'"
+      [height]="'400px'"
+      [resetZoomEffect]="false">
+      <div class="chart_header">
+        <div class="title">
+          <p class="chart_header__title">Avg Ticket Size</p>
+          <p class="chart_header__sales">Looking at each week of Jun</p>
+        </div>
+      </div>
+    </app-chart>
 
   </div>
 </div>

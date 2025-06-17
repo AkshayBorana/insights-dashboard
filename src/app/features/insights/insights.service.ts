@@ -12,14 +12,12 @@ export class InsightsService {
   private http = inject(HttpClient);
   env = environment;
 
-  // public getAreaData(dataset: string, range: string) {
-  //   return this.http.get(this.env.API_URL).pipe(
-  //     map((data) => data[dataset][range] || data[dataset]['lastMonth']),
-  //     catchError((error: HttpErrorResponse) =>
-  //       of('Error loading data! Please try again.')
-  //     )
-  //   );
-  // }
+  public getChartData(dataset: string, range: string) {
+    return this.http
+      .get(`${this.env.API_URL}`)
+      .pipe(map((data) => data[dataset][range] || data[dataset]['lastMonth']));
+  }
+
   getAreaData(range: string): Observable<any> {
     const mockData = this.getMockAreaData(range);
     return of(mockData);
@@ -177,5 +175,4 @@ export class InsightsService {
     };
     return baseData;
   }
-
 }
