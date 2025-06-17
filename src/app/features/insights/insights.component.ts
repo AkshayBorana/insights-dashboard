@@ -16,7 +16,7 @@ import { DateRange } from '../../shared/model/date-range.model';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
-import { Subject, takeUntil } from 'rxjs';
+import { forkJoin, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-insights',
@@ -82,22 +82,41 @@ export class InsightsComponent implements OnInit, OnDestroy {
   }
 
   private loadData(range: string): void {
-    this.insightsService
-      .getAreaData(range)
+
+    const areaChart$ = this.insightsService.getAreaData(range);
+    const barChart$ = this.insightsService.getBarData(range);
+    const stackedChart$ = this.insightsService.getStackedData(range);
+
+    forkJoin([areaChart$, barChart$, stackedChart$])
       .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe((data) => {
-        this.areaChartData.set(data);
+      .subscribe(([areaData, barData, stackedData]) => {
+       this.areaChartData.set(areaData);
+       this.barChartData.set(barData);
+       this.stackedChartData.set(stackedData)
       });
 
-    this.insightsService
-      .getBarData(range)
+    this.insightsService.getChartData(this.dataSetNumber(), range)
       .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe((data) => this.barChartData.set(data));
+      .subscribe(res => {
+        console.log(res);
+      })
 
-    this.insightsService
-      .getStackedData(range)
-      .pipe(takeUntil(this.ngUnSubscribe$))
-      .subscribe((data) => this.stackedChartData.set(data));
+    // this.insightsService
+    //   .getAreaData(range)
+    //   .pipe(takeUntil(this.ngUnSubscribe$))
+    //   .subscribe((data) => {
+    //     this.areaChartData.set(data);
+    //   });
+
+    // this.insightsService
+    //   .getBarData(range)
+    //   .pipe(takeUntil(this.ngUnSubscribe$))
+    //   .subscribe((data) => this.barChartData.set(data));
+
+    // this.insightsService
+    //   .getStackedData(range)
+    //   .pipe(takeUntil(this.ngUnSubscribe$))
+    //   .subscribe((data) => this.stackedChartData.set(data));
   }
 
   private initChart(): void {
