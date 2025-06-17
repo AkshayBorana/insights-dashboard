@@ -33,24 +33,39 @@
         </div>
         @if(salesDateRecord() === 'Custom') {
         <div class="calendar">
-          <p-datepicker class="chart_header__customdate" [(ngModel)]="customStartDate" [showIcon]="true"
-            [readonlyInput]="true" placeholder="Start Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
+          <p-datepicker
+            class="chart_header__customdate"
+            [(ngModel)]="customStartDate"
+            [showIcon]="true"
+            [readonlyInput]="true"
+            placeholder="Start Date"
+            dateFormat="mm/dd/yy"
+            [minDate]="minDateLimit" [maxDate]="maxDateLimit"
+            (onSelect)="onCustomDateSelect()"
+             />
 
-          <p-datepicker class="chart_header__customdate" [(ngModel)]="customEndDate" [showIcon]="true"
-            [readonlyInput]="true" placeholder="End Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
+          <p-datepicker
+            class="chart_header__customdate"
+            [(ngModel)]="customEndDate"
+            [showIcon]="true"
+            [readonlyInput]="true"
+            placeholder="End Date"
+            dateFormat="mm/dd/yy"
+            [minDate]="minDateLimit" [maxDate]="maxDateLimit"
+            (onSelect)="onCustomDateSelect()"
+             />
         </div>
         }
       </div>
     </app-chart>
 
-    <!-- <div class="container"> -->
     <!-- Bar chart -->
     <app-chart class="chart_chart" [type]="'bar'" [data]="barChartData()" [options]="barChartOptions()" [width]="'100%'"
       [height]="'400px'" [resetZoomEffect]="false">
       <div class="chart_header">
         <div class="title">
           <p class="chart_header__title">Sales Channel Breakdown</p>
-          <p class="chart_header__sales">Looking at a period of Jun 8 - Jun 14</p>
+          <p class="chart_header__sales">Looking at data for period of Jun 8 - Jun 14</p>
         </div>
       </div>
     </app-chart>
@@ -61,12 +76,10 @@
       <div class="chart_header">
         <div class="title">
           <p class="chart_header__title">Avg Ticket Size</p>
-          <p class="chart_header__sales">Looking at each week of Jun</p>
+          <p class="chart_header__sales">Looking at data for each week of Jun</p>
         </div>
       </div>
     </app-chart>
-    <!-- </div> -->
-
 
   </div>
 </div>
