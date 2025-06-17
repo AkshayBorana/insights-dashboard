@@ -16,6 +16,7 @@ import { DateRange } from '../../shared/model/date-range.model';
 import { FormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-insights',
@@ -24,11 +25,19 @@ import { DatePickerModule } from 'primeng/datepicker';
   imports: [ChartComponent, FormsModule, SelectModule, DatePickerModule],
 })
 export class InsightsComponent implements OnInit, OnDestroy {
+  ngUnSubscribe$ = new Subject<void>();
+
   insightsService = inject(InsightsService);
   chartConfigService = inject(ChartConfigService);
 
   areaChartData = signal<any>(null);
   areaChartOptions = signal<any>(null);
+
+  barChartData = signal<any>(null);
+  barChartOptions = signal<any>(null);
+
+  stackedChartData = signal<any>(null);
+  stackedChartOptions = signal<any>(null);
 
   customStartDate = model<Date | null>(null);
   customEndDate = model<Date | null>(null);
@@ -73,13 +82,28 @@ export class InsightsComponent implements OnInit, OnDestroy {
   }
 
   private loadData(range: string): void {
-    this.insightsService.getAreaData(range).subscribe((data) => {
-      this.areaChartData.set(data);
-    });
+    this.insightsService
+      .getAreaData(range)
+      .pipe(takeUntil(this.ngUnSubscribe$))
+      .subscribe((data) => {
+        this.areaChartData.set(data);
+      });
+
+    this.insightsService
+      .getBarData(range)
+      .pipe(takeUntil(this.ngUnSubscribe$))
+      .subscribe((data) => this.barChartData.set(data));
+
+    this.insightsService
+      .getStackedData(range)
+      .pipe(takeUntil(this.ngUnSubscribe$))
+      .subscribe((data) => this.stackedChartData.set(data));
   }
 
   private initChart(): void {
     this.areaChartOptions.set(this.chartConfigService.areaChartCongif);
+    this.barChartOptions.set(this.chartConfigService.barChartConfig);
+    this.stackedChartOptions.set(this.chartConfigService.stackedChartConfig);
   }
 
   /**
@@ -119,5 +143,8 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.ngUnSubscribe$.next();
+    this.ngUnSubscribe$.complete();
+  }
 }
