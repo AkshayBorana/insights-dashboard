@@ -49,6 +49,12 @@ export class InsightsComponent implements OnInit, OnDestroy {
     { name: 'Custom', value: 'custom' },
   ];
 
+  dataSetButton = [
+    { id: 0, value: 'dataSet1', label: 'Data set 1' },
+    { id: 1, value: 'dataSet2', label: 'Data set 2' },
+    { id: 2, value: 'dataSet3', label: 'Data set 3' }
+  ]
+
   salesDateRecord = signal<string>('Last Month');
   computeDateRangeText = computed(() => {
     let range = '';
@@ -164,7 +170,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
 
   public updateDataSets(dataSet: string): void {
     this.dataSetNumber.set(dataSet);
-    // this.loadData(this.dataSetNumber(), this.selectedRange())
+    this.loadData( this.selectedRange())
   }
 
   ngOnDestroy(): void {
