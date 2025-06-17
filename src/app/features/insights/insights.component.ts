@@ -70,7 +70,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
         const endDate = `${this.customEndDate().toLocaleString('default', {
           month: 'long',
         })} ${this.customEndDate().getDate().toString()}`;
-        return (range = `Looking at period of ${strDate} - ${endDate}`);
+        return (range = `Looking at data for period of ${strDate} - ${endDate}`);
       } else {
         return range;
       }
@@ -80,11 +80,14 @@ export class InsightsComponent implements OnInit, OnDestroy {
   dataSetNumber = signal<string>('dataSet1');
   selectedRange = signal<string>('lastMonth');
 
-  constructor() {}
+  minDateLimit: Date;
+  maxDateLimit: Date;
 
   ngOnInit(): void {
     this.initChart();
     this.loadData(this.selectedRange());
+    this.minDateLimit = this.setDateSelectionLimit().minDate;
+    this.maxDateLimit = this.setDateSelectionLimit().maxDate;
   }
 
   /**
@@ -108,10 +111,36 @@ export class InsightsComponent implements OnInit, OnDestroy {
           return updatedData;
         })
       );
-    const barChart$ = this.insightsService.getBarData(this.dataSetNumber());
-    const stackedChart$ = this.insightsService.getStackedData(
-      this.dataSetNumber()
-    );
+    const barChart$ = this.insightsService
+      .getBarData(this.dataSetNumber())
+      .pipe(
+        map((res) => {
+          const updatedData = { ...res };
+          updatedData.datasets = res.datasets.map((dataset) => ({
+            ...dataset,
+            total: dataset.data.reduce(
+              (acc: number, val: number) => acc + val,
+              0
+            ),
+          }));
+          return updatedData;
+        })
+      );
+    const stackedChart$ = this.insightsService
+      .getStackedData(this.dataSetNumber())
+      .pipe(
+        map((res) => {
+          const updatedData = { ...res };
+          updatedData.datasets = res.datasets.map((dataset) => ({
+            ...dataset,
+            total: dataset.data.reduce(
+              (acc: number, val: number) => acc + val,
+              0
+            ),
+          }));
+          return updatedData;
+        })
+      );
 
     forkJoin([areaChart$, barChart$, stackedChart$])
       .pipe(takeUntil(this.ngUnSubscribe$))
@@ -185,6 +214,28 @@ export class InsightsComponent implements OnInit, OnDestroy {
   public updateDataSets(dataSet: string): void {
     this.dataSetNumber.set(dataSet);
     this.loadData(this.selectedRange());
+  }
+
+  /**
+   * To set min and max date limits on calendar for custom date selection
+   * @returns Object - An object containing `minDate` and `maxDate` as Date objects.
+   */
+  setDateSelectionLimit(): { minDate: Date; maxDate: Date } {
+    const now = new Date();
+    const minDate = new Date();
+    const maxDate = new Date();
+
+    minDate.setDate(1);
+    minDate.setHours(0, 0, 0, 0);
+
+    maxDate.setMonth(now.getMonth() + 1);
+    maxDate.setDate(0);
+    maxDate.setHours(23, 59, 59, 999);
+
+    return {
+      minDate,
+      maxDate,
+    };
   }
 
   ngOnDestroy(): void {

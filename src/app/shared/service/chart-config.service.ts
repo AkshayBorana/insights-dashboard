@@ -32,7 +32,7 @@ export class ChartConfigService {
           generateLabels: (chart: any) => {
             const datasets = chart.data.datasets;
             return datasets.map((dataset: any) => ({
-              text: `$${dataset.total.toLocaleString()} ${dataset.label}`,
+              text: `$${dataset.total.toLocaleString()} Total ${dataset.label}`,
               fillStyle: dataset.backgroundColor,
               strokeStyle: dataset.borderColor,
               lineWidth: 1,
@@ -61,7 +61,28 @@ export class ChartConfigService {
 
   public barChartConfig = {
     responsive: true,
-    plugins: { legend: { position: 'top', display: false } },
+    plugins: {
+      legend: {
+        align: 'start',
+        position: 'top',
+        display: true,
+        labels: {
+          boxWidth: 10,
+          boxHeight: 10,
+          padding: 20,
+          generateLabels: (chart: any) => {
+            const datasets = chart.data.datasets;
+            return datasets.map((dataset: any) => ({
+              text: `$${dataset.total.toLocaleString()} ${dataset.label}`,
+              fillStyle: dataset.backgroundColor,
+              strokeStyle: dataset.borderColor,
+              lineWidth: 1,
+              borderRadius: 2,
+            }));
+          },
+        },
+      },
+    },
     scales: {
       x: {
         border: { display: false },
@@ -83,7 +104,26 @@ export class ChartConfigService {
   public stackedChartConfig = {
     responsive: true,
     plugins: {
-      legend: { display: true, },
+      legend: {
+        align: 'start',
+        position: 'top',
+        display: true,
+        labels: {
+          boxWidth: 10,
+          boxHeight: 10,
+          padding: 20,
+          generateLabels: (chart: any) => {
+            const datasets = chart.data.datasets;
+            return datasets.map((dataset: any) => ({
+              text: `$${dataset.total.toLocaleString()} ${dataset.label}`,
+              fillStyle: dataset.backgroundColor,
+              strokeStyle: dataset.borderColor,
+              lineWidth: 1,
+              borderRadius: 2,
+            }));
+          },
+        },
+      },
     },
     scales: {
       x: {
