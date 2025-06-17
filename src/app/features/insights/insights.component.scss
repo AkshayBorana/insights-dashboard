@@ -1,10 +1,15 @@
+@use '../../../assets/themes/colors';
+
 .insights {
   &_header {
     height: 60px;
     width: 100%;
-    border: 1px solid #000;
+    border: 1px solid colors.$black;
     padding: 0px 20px;
     font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -14,8 +19,12 @@
   gap: 20px;
   padding: 20px 8px;
 
+  // display: flex;
+  // flex-direction: column;
+  // width: 100%;
+
   &_chart {
-    border: 1px solid #efefef;
+    border: 1px solid colors.$gallery_solid;
     border-radius: 8px;
     display: block;
     margin: 10px 0px;
@@ -23,7 +32,7 @@
 
   &_header {
     display: flex;
-    border-bottom: 1px solid #efefef;
+    border-bottom: 1px solid colors.$gallery_solid;
     flex-flow: row wrap;
     min-height: 60px;
     align-items: center;
@@ -34,21 +43,21 @@
       font-size: 14px;
       font-weight: 900;
       margin: 0px;
-      color: #000;
+      color: colors.$black;
       padding: 0px 0px 4px 0px;
     }
 
     &__sales {
       font-size: 12px;
       margin: 0px;
-      color: #6e6e6e;
+      color: colors.$dove_grey;
     }
 
     &__daterange {
       height: 40px;
       font-size: 12px;
       font-weight: 600;
-      color: #000;
+      color: colors.$black;
     }
 
     &__customdate {
@@ -91,3 +100,29 @@
     width: 300px;
   }
 }
+
+// .container {
+//     display: flex;
+//     flex-wrap: wrap;
+//     justify-content: space-between;
+//     gap: 1rem;
+// }
+
+// .full_width {
+//       width: 100%;
+//     }
+
+// .half_width {
+//       flex: 1;
+//     min-width: 0;
+// }
+
+// @media (max-width: 768px) {
+//       .container {
+//         flex-direction: column;
+//       }
+
+//       .half_width {
+//         flex: 100%; /* Full width on small screens */
+//       }
+//     }

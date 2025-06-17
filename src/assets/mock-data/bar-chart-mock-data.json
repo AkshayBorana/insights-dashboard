@@ -1,0 +1,65 @@
+{
+  "dataSet1": {
+    "labels": [
+      "In-store",
+      "Online"
+    ],
+    "datasets": [
+      {
+        "label": "Sales",
+        "data": [
+          17271,
+          19271
+        ],
+        "backgroundColor": [
+          "rgba(255, 215, 0, 0.8)",
+          "rgba(173, 216, 230, 0.8)"
+        ],
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  },
+  "dataSet2": {
+    "labels": [
+      "In-store",
+      "Online"
+    ],
+    "datasets": [
+      {
+        "label": "Sales",
+        "data": [
+          18000,
+          25000
+        ],
+        "backgroundColor": [
+          "rgba(255, 215, 0, 0.8)",
+          "rgba(173, 216, 230, 0.8)"
+        ],
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  },
+  "dataSet3": {
+    "labels": [
+      "In-store",
+      "Online"
+    ],
+    "datasets": [
+      {
+        "label": "Sales",
+        "data": [
+          9000,
+          10000
+        ],
+        "backgroundColor": [
+          "rgba(255, 215, 0, 0.8)",
+          "rgba(173, 216, 230, 0.8)"
+        ],
+        "maxBarThickness": 100,
+        "borderRadius": 4
+      }
+    ]
+  }
+}

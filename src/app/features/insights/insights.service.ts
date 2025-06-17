@@ -12,13 +12,42 @@ export class InsightsService {
   private http = inject(HttpClient);
   env = environment;
 
-  public getChartData(dataset: string, range: string) {
-    return this.http
-      .get(`${this.env.API_URL}`)
-      .pipe(map((data) => data[dataset][range] || data[dataset]['lastMonth']));
+  public getAreaChartData(dataset: string, range: string): Observable<any> {
+    return this.http.get<any>(`${this.env.AREA_API_URL}`).pipe(
+      map((data) => data[dataset][range] || data[dataset]['lastMonth']),
+      catchError((error: HttpErrorResponse) =>
+        of('Error loading data! Please try again.')
+      )
+    );
+  }
+
+  getBarData(dataset, range: string): Observable<any> {
+    return this.http.get<any>(`${this.env.BAR_API_URL}`).pipe(
+      map((data) => data[dataset] || data['dataSet1']),
+      catchError((error: HttpErrorResponse) =>
+        of('Error loading data! Please try again.')
+      )
+    );
+    // const mockData = this.getMockBarData(range);
+    // return of(mockData);
+  }
+
+  getStackedData(dataset, range: string): Observable<any> {
+    return this.http.get<any>(`${this.env.STACKED_API_URL}`).pipe(
+      map((data) => data[dataset] || data['dataSet1']),
+      catchError((error: HttpErrorResponse) =>
+        of('Error loading data! Please try again.')
+      )
+    );
+
+    // const mockData = this.getMockStackedData(range);
+    // return of(mockData);
   }
 
   getAreaData(range: string): Observable<any> {
+    // return this.http.get<any>(`${this.env.BAR_API_URL}`)
+    //   .pipe(map((data) => data[dataset][range] || data[dataset]['lastMonth']),
+    //     catchError((error: HttpErrorResponse) => of('Error loading data! Please try again.')))
     const mockData = this.getMockAreaData(range);
     return of(mockData);
   }
@@ -117,11 +146,6 @@ export class InsightsService {
     return baseData;
   }
 
-  getBarData(range: string): Observable<any> {
-    const mockData = this.getMockBarData(range);
-    return of(mockData);
-  }
-
   private getMockBarData(range: string): any {
     const baseData = {
       labels: ['In-store', 'Online'],
@@ -136,19 +160,9 @@ export class InsightsService {
           maxBarThickness: 120, // Added width to bar
           borderRadius: 4, // Added border radius as mentioned in the Bar chart's screenshot.
         },
-        // {
-        //   label: 'Online',
-        //   data: [19271],
-        //   backgroundColor: 'rgba(173, 216, 230, 0.8)',
-        // },
       ],
     };
     return baseData;
-  }
-
-  getStackedData(range: string): Observable<any> {
-    const mockData = this.getMockStackedData(range);
-    return of(mockData);
   }
 
   private getMockStackedData(range: string): any {
