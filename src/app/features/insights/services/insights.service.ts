@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
-import { environment } from '../../../environment/environment';
-import { SalesData } from '../../shared/model/chart-data.model';
+import { environment } from '../../../../environment/environment';
+import { SalesData } from '../../../shared/model/chart-data.model';
 
 @Injectable({
   providedIn: 'root',
