@@ -5,28 +5,27 @@
 
   <div class="datasets">
     @for(btn of dataSetButton; track btn.id) {
-    <button class="datasets_btn" [class.active]="dataSetNumber() === btn.value" pButton pRipple [label]="btn.label"
-      (click)="updateDataSets(btn.value)">
-    </button>
-    }
+    <div>
+      <button class="datasets_btn" [class.active]="dataSetNumber() === btn.value" pButton pRipple [label]="btn.label"
+        (click)="updateDataSets(btn.value)">
+      </button>
+    </div>
 
-    <div class="chart_header">
-      <div class="dateranges">
-        <p-select class="chart_header__daterange" [options]="dateRanges" optionLabel="name"
+    }
+      <div class="datasets_range">
+        <p-select class="" [options]="dateRanges" optionLabel="name"
           (onChange)="onDateRangeChange($event)">
         </p-select>
       </div>
       @if(salesDateRecord() === 'Custom') {
-      <div class="calendar">
-        <p-datepicker class="chart_header__customdate" [(ngModel)]="customStartDate" [showIcon]="true"
+      <div class="datasets_calendar">
+        <p-datepicker class="datasets_calendar__customdate" [(ngModel)]="customStartDate" [showIcon]="true"
           [readonlyInput]="true" placeholder="Start Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
 
-        <p-datepicker class="chart_header__customdate" [(ngModel)]="customEndDate" [showIcon]="true"
+        <p-datepicker class="datasets_calendar__customdate" [(ngModel)]="customEndDate" [showIcon]="true"
           [readonlyInput]="true" placeholder="End Date" dateFormat="mm/dd/yy" (onSelect)="onCustomDateSelect()" />
       </div>
       }
-    </div>
-
   </div>
 
   <div class="chart">
@@ -40,6 +39,11 @@
           <p class="chart_header__title">{{ chart.chartTitle }}</p>
           <p class="chart_header__sales">{{ computeDateRangeText() }} </p>
         </div>
+      </div>
+
+      <div class="chart_legend">
+        <p class="chart_legend__total">$ {{ chart.avgTotal.total_1 }}</p>
+        <p class="chart_legend__total">$ {{ chart.avgTotal.total_2 }}</p>
       </div>
     </app-chart>
     }
