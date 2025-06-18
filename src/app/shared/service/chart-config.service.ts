@@ -64,15 +64,13 @@ export class ChartConfigService {
 
   private configLegend(): unknown {
     return {
-      legend: {
-        align: 'start',
-        position: 'top',
-        display: true,
-        labels: {
-          boxWidth: 10,
-          boxHeight: 10,
-          padding: 20,
-        },
+      align: 'start',
+      position: 'top',
+      display: true,
+      labels: {
+        boxWidth: 10,
+        boxHeight: 10,
+        padding: 20,
       },
     };
   }

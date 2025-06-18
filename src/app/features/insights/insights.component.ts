@@ -39,6 +39,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
   chartConfigService = inject(ChartConfigService);
   customStartDate = model<Date | null>(null);
   customEndDate = model<Date | null>(null);
+
   public dateRanges: DateRange[] = [
     { name: 'Last Month', value: 'lastMonth' },
     { name: 'Last Quarter', value: 'lastQuarter' },
@@ -50,6 +51,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
     { id: 1, value: 'decathlon', label: 'Decathlon' },
     { id: 2, value: 'canadaGoose', label: 'Canada Goose' },
   ];
+
   salesDateRecord = signal<string>('Last Month');
   computeDateRangeText = computed(() => {
     let range = '';
@@ -77,6 +79,15 @@ export class InsightsComponent implements OnInit, OnDestroy {
   selectedRange = signal<string>('lastMonth');
   chartData = signal<any[]>([]);
 
+  chartLegendTotal = signal({
+    allCustomerSales: 0,
+    loyaltyCustomerSales: 0,
+    inStoreSaleAmount: 0,
+    onlineSaleAmount: 0,
+    totalAvgTicketAmount: 0,
+    loyaltyCusAvgTicketAmount: 0,
+  });
+
   ngOnInit(): void {
     this.getData();
   }
@@ -90,7 +101,6 @@ export class InsightsComponent implements OnInit, OnDestroy {
       .getData(this.dataSetNumber())
       .pipe(takeUntil(this.ngUnSubscribe$))
       .subscribe((res: SalesData[]) => {
-
         const {
           labels = [],
           allCustomerSales = [],
@@ -109,6 +119,10 @@ export class InsightsComponent implements OnInit, OnDestroy {
             width: '100%',
             height: '400px',
             resetZoomEnable: true,
+            avgTotal: {
+              total_1: allCustomerSales.reduce((acc, cur) => (acc += cur)),
+              total_2: loyaltyCustomerSales.reduce((acc, cur) => (acc += cur)),
+            },
             chartConfigOptions:
               this.chartConfigService.getChartConfig()['area'],
             callback: (chart: ChartModule): void => {
@@ -145,6 +159,10 @@ export class InsightsComponent implements OnInit, OnDestroy {
             width: '100%',
             height: '400px',
             resetZoomEnable: false,
+            avgTotal: {
+              total_1: inStoreSaleAmount.reduce((acc, cur) => (acc += cur)),
+              total_2: onlineSaleAmount.reduce((acc, cur) => (acc += cur)),
+            },
             chartConfigOptions: this.chartConfigService.getChartConfig()['bar'],
             data: {
               labels: ['In-store', 'Online'],
@@ -177,6 +195,12 @@ export class InsightsComponent implements OnInit, OnDestroy {
             width: '100%',
             height: '400px',
             resetZoomEnable: false,
+            avgTotal: {
+              total_1: totalAvgTicketAmount.reduce((acc, cur) => (acc += cur)),
+              total_2: loyaltyCusAvgTicketAmount.reduce(
+                (acc, cur) => (acc += cur)
+              ),
+            },
             chartConfigOptions:
               this.chartConfigService.getChartConfig()['stacked'],
             data: {
@@ -327,6 +351,45 @@ export class InsightsComponent implements OnInit, OnDestroy {
       totalAvgTicketAmount,
       loyaltyCusAvgTicketAmount,
     };
+  }
+
+  private getChartsLegendAmountTotal(
+    allCustomerSales = [],
+    loyaltyCustomerSales = [],
+    inStoreSaleAmount = [],
+    onlineSaleAmount = [],
+    totalAvgTicketAmount = [],
+    loyaltyCusAvgTicketAmount = []
+  ): void {
+    this.chartLegendTotal.update((previousVal) => {
+      return {
+        ...previousVal,
+        allCustomerSales: allCustomerSales.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+        loyaltyCustomerSales: loyaltyCustomerSales.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+        inStoreSaleAmount: inStoreSaleAmount.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+        onlineSaleAmount: onlineSaleAmount.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+        totalAvgTicketAmount: totalAvgTicketAmount.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+        loyaltyCusAvgTicketAmount: loyaltyCusAvgTicketAmount.reduce(
+          (acc, cur) => (acc += cur),
+          0
+        ),
+      };
+    });
   }
 
   // Return labels if user selects last year option.

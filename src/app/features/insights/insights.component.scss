@@ -48,53 +48,30 @@
       margin: 0px;
       color: colors.$dove_grey;
     }
-
-    &__daterange {
-      height: 40px;
-      font-size: 12px;
-      font-weight: 600;
-      color: colors.$black;
-    }
-
-    &__customdate {
-      height: 40px;
-      width: 130px;
-
-      ::ng-deep {
-        .p-datepicker {
-          height: inherit;
-        }
-
-        .p-inputtext {
-          font-size: 14px;
-        }
-
-        .p-datepicker-dropdown {
-          width: 30px;
-        }
-      }
-    }
   }
 
+  &_legend {
+    display: flex;
+    flex-direction: row;
+    // gap: 5px;
+    position: relative;
+    top: 18px;
+    left: -5px;
+
+    &__total {
+      margin: 0px;
+    font-size: 24px;
+    color: #000;
+    padding: 0px 25px;
+    }
+
+  }
 }
 
-.title,
-.dateranges,
-.calendar {
+.title {
   padding: 5px 0px;
   width: 300px;
   margin: 0px 5px;
-}
-
-.calendar {
-  display: flex;
-  justify-content: space-between;
-}
-
-.dateranges {
-  p-select {
-    width: 300px;
-  }
 }
 
 .datasets {
@@ -102,13 +79,52 @@
   justify-content: center;
   align-items: center;
   padding: 10px;
+  flex-flow: row wrap;
+  gap: 5px;
 
   &_btn {
     background: transparent;
     color: colors.$black;
     border: 1px solid colors.$gallery_solid;
-    margin: 0px 10px;
     font-size: 12px;
+    height: 40px;
+    max-width: 115px;
+    width: auto;
+  }
+
+  &_range {
+    p-select {
+      width: 310px;
+      height: 40px;
+      border: 1px solid colors.$gallery_solid;
+      font-size: 12px;
+    }
+  }
+
+  &_calendar {
+    padding: 5px 0px;
+    width: 310px;
+    display: flex;
+    justify-content: space-between;
+
+    &__customdate {
+      height: 40px;
+      width: 150px;
+
+      ::ng-deep {
+        .p-datepicker {
+          height: inherit;
+        }
+
+        .p-inputtext {
+          font-size: 12px;
+        }
+
+        .p-datepicker-dropdown {
+          width: 30px;
+        }
+      }
+    }
   }
 
   .active {
