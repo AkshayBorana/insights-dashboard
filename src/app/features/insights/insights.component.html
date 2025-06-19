@@ -42,8 +42,8 @@
       </div>
 
       <div class="chart_legend">
-        <p class="chart_legend__total">$ {{ chart.avgTotal.total_1 }}</p>
-        <p class="chart_legend__total">$ {{ chart.avgTotal.total_2 }}</p>
+        <p class="chart_legend__total">{{ chart.avgTotal.total_1 | currency : 'USD' : 'symbol' : '1.0-0' }}</p>
+        <p class="chart_legend__total">{{ chart.avgTotal.total_2 | currency : 'USD' : 'symbol' : '1.0-0' }}</p>
       </div>
     </app-chart>
     }
