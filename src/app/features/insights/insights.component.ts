@@ -20,6 +20,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { formatDate } from '@angular/common';
 import { SalesData } from '../../shared/model/chart-data.model';
+import { CurrencyPipe } from '@angular/common';
+import { getDateLabels } from '../../core/utils/date-utils';
 
 @Component({
   selector: 'app-insights',
@@ -31,12 +33,16 @@ import { SalesData } from '../../shared/model/chart-data.model';
     SelectModule,
     DatePickerModule,
     ButtonModule,
+    CurrencyPipe,
   ],
 })
 export class InsightsComponent implements OnInit, OnDestroy {
+  // Subject to unsubscribe when component gets destroyed.
   ngUnSubscribe$ = new Subject<void>();
+
   insightsService = inject(InsightsService);
   chartConfigService = inject(ChartConfigService);
+
   customStartDate = model<Date | null>(null);
   customEndDate = model<Date | null>(null);
 
@@ -75,36 +81,29 @@ export class InsightsComponent implements OnInit, OnDestroy {
     }
     return range;
   });
+
   dataSetNumber = signal<string>('pizzaStore');
   selectedRange = signal<string>('lastMonth');
   chartData = signal<any[]>([]);
 
-  chartLegendTotal = signal({
-    allCustomerSales: 0,
-    loyaltyCustomerSales: 0,
-    inStoreSaleAmount: 0,
-    onlineSaleAmount: 0,
-    totalAvgTicketAmount: 0,
-    loyaltyCusAvgTicketAmount: 0,
-  });
-
   ngOnInit(): void {
-    this.getData();
+    this.getSalesData();
   }
 
   /**
-   * Fetch data from api service for Area, Bar and Stacked chart.
+   * Fetches sales data from json file for a given time range for Area, Bar and Stacked chart.
+   * Calculates the data for each chart type for a given range and sets the graph config.
    * @returns void - This method does not return a value
    */
-  private getData(): void {
+  private getSalesData(): void {
     this.insightsService
       .getData(this.dataSetNumber())
       .pipe(takeUntil(this.ngUnSubscribe$))
       .subscribe((res: SalesData[]) => {
         const {
-          labels = [],
           allCustomerSales = [],
           loyaltyCustomerSales = [],
+          labels = [],
           inStoreSaleAmount = [],
           onlineSaleAmount = [],
           totalAvgTicketAmount = [],
@@ -187,7 +186,6 @@ export class InsightsComponent implements OnInit, OnDestroy {
               ],
             },
           },
-
           {
             chartConfig: 'stacked',
             chartTitle: 'Average Ticket Size',
@@ -231,240 +229,150 @@ export class InsightsComponent implements OnInit, OnDestroy {
       });
   }
 
-  formatData(res: SalesData[], range: string) {
-    const allCustomerSales = [];
-    const loyaltyCustomerSales = [];
-    const labels = [];
-    const inStoreSaleAmount = [];
-    const onlineSaleAmount = [];
-    const totalAvgTicketAmount = [];
-    const loyaltyCusAvgTicketAmount = [];
-    let filteredData = [];
+  /**
+   * * Formats sales data based on a specified time range.
+   * @param res An array of sales data
+   * @param range Time range to filter the data ('lastMonth', 'lastQuarter', 'lastYear', 'custom'),
+   * @returns Object
+   *         - `allCustomerSales`: Array of total customer sales amounts (numbers).
+   *         - `loyaltyCustomerSales`: Array of loyalty customer sales amounts (numbers).
+   *         - `labels`: Array of formatted date strings for the X-axis (strings).
+   *         - `inStoreSaleAmount`: Array of In store sales amounts (numbers).
+   *         - `onlineSaleAmount`: Array of online sales amounts (numbers).
+   *         - `totalAvgTicketAmount`: Array of average ticket amounts (numbers).
+   *         - `loyaltyCusAvgTicketAmount`: Array of loyalty customer average ticket amounts (numbers).
+   */
+  private formatData(res: SalesData[], range: string) {
+    const result = {
+      allCustomerSales: [] as number[],
+      loyaltyCustomerSales: [] as number[],
+      labels: [] as string[],
+      inStoreSaleAmount: [] as number[],
+      onlineSaleAmount: [] as number[],
+      totalAvgTicketAmount: [] as number[],
+      loyaltyCusAvgTicketAmount: [] as number[],
+    };
 
     if (!res && !res.length) {
-      return {
-        allCustomerSales,
-        loyaltyCustomerSales,
-        labels,
-        inStoreSaleAmount,
-        onlineSaleAmount,
-        totalAvgTicketAmount,
-        loyaltyCusAvgTicketAmount,
-      };
+      return result;
+    }
+    const { startDate, endDate } = this.getDateRange(range);
+    const filteredData = this.filterDataByDateRange(res, startDate, endDate);
+    if (filteredData.length > 0) {
+      this.generateChartData(filteredData, result);
     }
 
-    // Last month
-    if (range === 'lastMonth') {
-      const { lastMonthFirstDayTimeStamp, lastMonthLastDayTimeStamp } =
-        this.getLastMonthDateLabels();
-      filteredData = res.filter((el: any) => {
-        if (
-          el.date >= lastMonthFirstDayTimeStamp &&
-          el.date <= lastMonthLastDayTimeStamp
-        ) {
-          return el;
-        }
-      });
-
-      filteredData.forEach((data: any, i) => {
-        allCustomerSales.push(data.allCustomerSales);
-        loyaltyCustomerSales.push(data.loyaltyCustomerSales);
-        inStoreSaleAmount.push(data.inStoreSaleAmount);
-        onlineSaleAmount.push(data.onlineSaleAmount);
-        totalAvgTicketAmount.push(data.totalAvgTicketAmount);
-        loyaltyCusAvgTicketAmount.push(data.loyaltyCusAvgTicketAmount);
-        labels.push(formatDate(data.date, 'YYYY-MM-dd', 'en-US'));
-      });
-    }
-
-    // For last quarter...
-    if (range === 'lastQuarter') {
-      const { lastQuarterFirstDay, lastQuarterLastDay } =
-        this.getLastQuarterLabels();
-      filteredData = res.filter((el: any) => {
-        if (el.date >= lastQuarterFirstDay && el.date <= lastQuarterLastDay) {
-          return el;
-        }
-      });
-
-      filteredData.forEach((data: any, i) => {
-        allCustomerSales.push(data.allCustomerSales);
-        loyaltyCustomerSales.push(data.loyaltyCustomerSales);
-        inStoreSaleAmount.push(data.inStoreSaleAmount);
-        onlineSaleAmount.push(data.onlineSaleAmount);
-        totalAvgTicketAmount.push(data.totalAvgTicketAmount);
-        loyaltyCusAvgTicketAmount.push(data.loyaltyCusAvgTicketAmount);
-        labels.push(formatDate(data.date, 'YYYY-MM-dd', 'en-US'));
-      });
-    }
-
-    // Last year....
-    if (range === 'lastYear') {
-      const { previousYearFirstDayTimeStamp, previousYearLastDayTimeStamp } =
-        this.getLastYearLabels();
-      filteredData = res.filter((el: any) => {
-        if (
-          el.date >= previousYearFirstDayTimeStamp &&
-          el.date <= previousYearLastDayTimeStamp
-        )
-          return el;
-      });
-
-      filteredData.forEach((data: any) => {
-        allCustomerSales.push(data.allCustomerSales);
-        loyaltyCustomerSales.push(data.loyaltyCustomerSales);
-        inStoreSaleAmount.push(data.inStoreSaleAmount);
-        onlineSaleAmount.push(data.onlineSaleAmount);
-        totalAvgTicketAmount.push(data.totalAvgTicketAmount);
-        loyaltyCusAvgTicketAmount.push(data.loyaltyCusAvgTicketAmount);
-        labels.push(formatDate(data.date, 'YYYY-MM-dd', 'en-US'));
-      });
-    }
-
-    // Custom date selection.
-    if (range === 'custom' && this.customStartDate() && this.customEndDate()) {
-      filteredData = res.filter((el: any) => {
-        if (
-          el.date >= this.customStartDate().getTime() &&
-          el.date <= this.customEndDate().getTime()
-        )
-          return el;
-      });
-
-      filteredData.forEach((data: any) => {
-        allCustomerSales.push(data.allCustomerSales);
-        loyaltyCustomerSales.push(data.loyaltyCustomerSales);
-        inStoreSaleAmount.push(data.inStoreSaleAmount);
-        onlineSaleAmount.push(data.onlineSaleAmount);
-        totalAvgTicketAmount.push(data.totalAvgTicketAmount);
-        loyaltyCusAvgTicketAmount.push(data.loyaltyCusAvgTicketAmount);
-        labels.push(formatDate(data.date, 'YYYY-MM-dd', 'en-US'));
-      });
-    }
-
-    return {
-      allCustomerSales,
-      loyaltyCustomerSales,
-      labels,
-      inStoreSaleAmount,
-      onlineSaleAmount,
-      totalAvgTicketAmount,
-      loyaltyCusAvgTicketAmount,
-    };
+    return result;
   }
 
-  private getChartsLegendAmountTotal(
-    allCustomerSales = [],
-    loyaltyCustomerSales = [],
-    inStoreSaleAmount = [],
-    onlineSaleAmount = [],
-    totalAvgTicketAmount = [],
-    loyaltyCusAvgTicketAmount = []
+  /**
+   * Filters data for a given date range start and end date (number). Date range is in milliseconds.
+   * @param data Array of sales data for a selected store
+   * @param startDate Filter date for a start date.
+   * @param endDate Filter date for an end date.
+   * @returns Filtered and sorted data for a given range.
+   */
+  private filterDataByDateRange(
+    data: any[],
+    startDate?: number,
+    endDate?: number
+  ): SalesData[] {
+    if (!startDate || !endDate) return [];
+
+    return data
+      .filter((el: any) => el.date >= startDate && el.date <= endDate)
+      .sort((a, b) => a.date - b.date);
+  }
+
+  private generateChartData(
+    filteredData: SalesData[],
+    result: {
+      allCustomerSales: number[];
+      loyaltyCustomerSales: number[];
+      labels: string[];
+      inStoreSaleAmount: number[];
+      onlineSaleAmount: number[];
+      totalAvgTicketAmount: number[];
+      loyaltyCusAvgTicketAmount: number[];
+    }
   ): void {
-    this.chartLegendTotal.update((previousVal) => {
-      return {
-        ...previousVal,
-        allCustomerSales: allCustomerSales.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-        loyaltyCustomerSales: loyaltyCustomerSales.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-        inStoreSaleAmount: inStoreSaleAmount.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-        onlineSaleAmount: onlineSaleAmount.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-        totalAvgTicketAmount: totalAvgTicketAmount.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-        loyaltyCusAvgTicketAmount: loyaltyCusAvgTicketAmount.reduce(
-          (acc, cur) => (acc += cur),
-          0
-        ),
-      };
+    filteredData.forEach((data: any) => {
+      result.allCustomerSales.push(data.allCustomerSales);
+      result.loyaltyCustomerSales.push(data.loyaltyCustomerSales);
+      result.inStoreSaleAmount.push(data.inStoreSaleAmount);
+      result.onlineSaleAmount.push(data.onlineSaleAmount);
+      result.totalAvgTicketAmount.push(data.totalAvgTicketAmount);
+      result.loyaltyCusAvgTicketAmount.push(data.loyaltyCusAvgTicketAmount);
+      result.labels.push(formatDate(data.date, 'YYYY-MM-dd', 'en-US'));
     });
   }
 
-  // Return labels if user selects last year option.
-  getLastYearLabels() {
-    const currentYear = new Date().getFullYear();
-    const previousYear = currentYear - 1;
-    const previousYearFirstDay = new Date(previousYear, 0, 1);
-    const previousYearLastDay = new Date(previousYear, 11, 0);
-    return {
-      previousYearFirstDay,
-      previousYearFirstDayTimeStamp: previousYearFirstDay.getTime(),
-      previousYearLastDay,
-      previousYearLastDayTimeStamp: previousYearLastDay.getTime(),
-    };
-  }
-
   /**
-   * Filters data for last month option.
-   * @returns last months first day, last day
+   * Generate the start date and end date in milliseconds (number) for a selected date range
+   * @param range Date range to filter data ( 'Last month', 'Last quarter', 'Last year' and 'Custom ).
+   * @returns Object
+   *           - `startDate`: Start date in milliseconds (number).
+   *           - `endDate`: End date in milliseconds (number).
    */
-  getLastMonthDateLabels() {
-    const currentMonth = new Date().getMonth();
-    const previousMonth = currentMonth - 1;
-    const currentYear = new Date().getFullYear();
-    const firstDay = new Date(currentYear, previousMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth, 0);
+  private getDateRange(range: string): {
+    startDate: number | undefined;
+    endDate: number | undefined;
+  } {
+    let startDate: number | undefined;
+    let endDate: number | undefined;
 
-    lastDay.setHours(23, 59, 59, 999);
+    switch (range) {
+      case 'lastMonth':
+        startDate = getDateLabels({ monthOffset: -1 }).firstDayTimeStamp;
+        endDate = getDateLabels({ monthOffset: -1 }).lastDayTimeStamp;
+        break;
 
-    return {
-      lastMonthFirstDay: firstDay,
-      lastMonthFirstDayTimeStamp: firstDay.getTime(),
-      lastMonthLastDay: lastDay,
-      lastMonthLastDayTimeStamp: lastDay.getTime(),
-    };
-  }
+      case 'lastQuarter':
+        const now = new Date('2025-06-18T19:49:00-04:00');
+        const currentQrtr = Math.floor(now.getMonth() / 3) + 1;
+        const lastQrtr = currentQrtr === 1 ? 4 : currentQrtr - 1;
+        const lastQrtrFirstMonth = (lastQrtr - 1) * 3 + 1;
+        const lastQrtrLastMonth = lastQrtrFirstMonth + 2;
+        const yearOffset = currentQrtr === 1 ? -1 : 0;
+        startDate = getDateLabels({
+          startMonth: lastQrtrFirstMonth,
+          endMonth: lastQrtrLastMonth,
+          yearOffset,
+        }).firstDayTimeStamp;
+        endDate = getDateLabels({
+          startMonth: lastQrtrFirstMonth,
+          endMonth: lastQrtrLastMonth,
+          yearOffset,
+        }).lastDayTimeStamp;
+        break;
 
-  /**
-   *
-   * @returns Gives last quarter first day and last day details
-   */
-  getLastQuarterLabels() {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+      case 'lastYear':
+        startDate = getDateLabels({
+          startMonth: 1,
+          endMonth: 12,
+          yearOffset: -1,
+        }).firstDayTimeStamp;
+        endDate = getDateLabels({
+          startMonth: 1,
+          endMonth: 12,
+          yearOffset: -1,
+        }).lastDayTimeStamp;
+        break;
 
-    const getMonthDates = (
-      firstMonth: number,
-      lastMonth: number,
-      year: number
-    ) => {
-      const firstDate = new Date(year, firstMonth - 1, 1); // 0-based month
-      firstDate.setHours(0, 0, 0, 0); // Start of day
-      const lastDate = new Date(year, lastMonth, 0); // Last day of the month
-      lastDate.setHours(23, 59, 59, 999); // End of day
-      return { firstDate, lastDate };
-    };
+      case 'custom':
+        startDate = this.customStartDate()
+          ? this.customStartDate().getTime()
+          : undefined;
+        endDate = this.customEndDate()
+          ? this.customEndDate().getTime()
+          : undefined;
+        break;
 
-    const currentQrtr = Math.floor(currentMonth / 3) + 1;
-    const lastQrtr = currentQrtr === 1 ? 4 : currentQrtr - 1; // Last quarter (1 for Q1)
-    const lastQrtrFirstMonth = (lastQrtr - 1) * 3 + 1; // First month of last quarter (1 for January)
-    const lastQrtrLastMonth = lastQrtrFirstMonth + 2; // Last month of last quarter (3 for March)
-    const quarterYear = currentQrtr === 1 ? currentYear - 1 : currentYear;
-    const { firstDate, lastDate } = getMonthDates(
-      lastQrtrFirstMonth,
-      lastQrtrLastMonth,
-      quarterYear
-    );
-
-    return {
-      lastQuarterFirstDay: firstDate.getTime(),
-      firstDate,
-      lastQuarterLastDay: lastDate.getTime(),
-      lastDate,
-    };
+      default:
+        startDate = undefined;
+        endDate = undefined;
+    }
+    return { startDate, endDate };
   }
 
   /**
@@ -477,7 +385,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
     this.salesDateRecord.set(name);
     this.selectedRange.set(value);
     if (value !== 'custom') {
-      this.getData();
+      this.getSalesData();
     }
   }
 
@@ -487,7 +395,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
    */
   public onCustomDateSelect(): void {
     if (this.customStartDate() && this.customEndDate()) {
-      this.getData();
+      this.getSalesData();
     }
   }
 
@@ -498,7 +406,7 @@ export class InsightsComponent implements OnInit, OnDestroy {
    */
   public updateDataSets(dataSet: string): void {
     this.dataSetNumber.set(dataSet);
-    this.getData();
+    this.getSalesData();
   }
 
   ngOnDestroy(): void {
